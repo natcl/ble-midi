@@ -1,0 +1,17 @@
+{
+    "name": "ble-midi",
+    "version": "0.0.1",
+    "main": "ble-midi.js",
+    "description": "Bluetooth Low Energy MIDI library",
+    "author": {
+        "name": "Nathanaël Lécaudé",
+        "url": "http://www.lecaude.com/"
+    },
+    "dependencies": {
+        "bleno": "~0.4"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/nat/ble-midi.git"
+    }
+}
