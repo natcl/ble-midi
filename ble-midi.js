@@ -14,25 +14,36 @@ const midiCharacteristicUUID = '7772e5db38684112a1a9f2669d106bf3';
 
 var midiCharacteristic = new Characteristic({
     uuid: midiCharacteristicUUID, // or 'fff1' for 16-bit
-    properties: ['read', 'write', 'notify'], // can be a combination of 'read', 'write', 'writeWithoutResponse', 'notify', 'indicate'
-    secure: ['read', 'write', 'notify'], // enable security for properties, can be a combination of 'read', 'write', 'writeWithoutResponse', 'notify', 'indicate'
+    properties: ['write', 'writeWithoutResponse', 'notify', 'read'], // can be a combination of 'read', 'write', 'writeWithoutResponse', 'notify', 'indicate'
+    secure: ['write', 'notify', 'read'], // enable security for properties, can be a combination of 'read', 'write', 'writeWithoutResponse', 'notify', 'indicate'
     //value: null, // optional static value, must be of type Buffer - for read only characteristics
     descriptors: [
         // see Descriptor for data type
     ],
-    onReadRequest: null, // optional read request handler, function(offset, callback) { ... }
-    onWriteRequest: null, // optional write request handler, function(data, offset, withoutResponse, callback) { ...}
-    onSubscribe: null, // optional notify/indicate subscribe handler, function(maxValueSize, updateValueCallback) { ...}
-    onUnsubscribe: null, // optional notify/indicate unsubscribe handler, function() { ...}
-    onNotify: null, // optional notify sent handler, function() { ...}
-    onIndicate: null // optional indicate confirmation received handler, function() { ...}
+    onReadRequest: function(offset, callback) {
+      console.log('onReadRequest');
+      callback(this.RESULT_SUCCESS); // optional read request handler, function(offset, callback) { ... }
+    },
+    onWriteRequest: function(data, offset, withoutResponse, callback) {
+      console.log(`onWriteRequest data: ${data.toString('hex')}, ${offset}, ${withoutResponse}`);
+    }, // optional write request handler, function(data, offset, withoutResponse, callback) { ...}
+    onSubscribe: function(maxValueSize, updateValueCallback) {
+      console.log(`onSubscribe: ${maxValueSize}`);
+    }, // optional notify/indicate subscribe handler, function(maxValueSize, updateValueCallback) { ...}
+    onUnsubscribe: function(){
+      console.log('onUnsubscribe');
+    }, // optional notify/indicate unsubscribe handler, function() { ...}
+    onNotify: function(){
+      console.log('onNotify');
+    }, // optional notify sent handler, function() { ...}
+    onIndicate: function(){
+      console.log('onIndicate');
+    } // optional indicate confirmation received handler, function() { ...}
 });
 
 var midiService = new PrimaryService({
     uuid: midiServiceUUID, // or 'fff0' for 16-bit
-    characteristics: [
-        midiCharacteristic
-    ]
+    characteristics: [midiCharacteristic]
 });
 
 bleno.on('stateChange', function(state) {
@@ -54,4 +65,10 @@ bleno.on('advertisingStart', function(error) {
   }
 });
 
-console.log('hello');
+bleno.on('accept', function(clientAddress) {
+    console.log("Accepted connection from address: " + clientAddress);
+});
+
+bleno.on('disconnect', function(clientAddress) {
+    console.log("Disconnected from address: " + clientAddress);
+});
