@@ -31,34 +31,34 @@ var midiCharacteristic = new Characteristic({
         // see Descriptor for data type
     ],
     onReadRequest: function(offset, callback) {
-      console.log('onReadRequest');
-      callback(this.RESULT_SUCCESS); // optional read request handler, function(offset, callback) { ... }
+        console.log('onReadRequest');
+        callback(this.RESULT_SUCCESS); // optional read request handler, function(offset, callback) { ... }
     },
     onWriteRequest: function(data, offset, withoutResponse, callback) {
-      console.log(`onWriteRequest data: ${data.toString('hex')}, ${offset}, ${withoutResponse}`);
-      var header = data[0];
-      var timestamp = data[1];
-      var status = data[2];
-      var byte1 = data[3];
-      var byte2 = data[4];
+        console.log(`onWriteRequest data: ${data.toString('hex')}, ${offset}, ${withoutResponse}`);
+        var header = data[0];
+        var timestamp = data[1];
+        var status = data[2];
+        var byte1 = data[3];
+        var byte2 = data[4];
 
-      var channel = (status & 0xF) + 1;
-      var type = midiTypes[status >> 4];
+        var channel = (status & 0xF) + 1;
+        var type = midiTypes[status >> 4];
 
-      console.log(`type: ${type} channel: ${channel} data1: ${byte1} data2: ${byte2}`);
+        console.log(`type: ${type} channel: ${channel} data1: ${byte1} data2: ${byte2}`);
     }, // optional write request handler, function(data, offset, withoutResponse, callback) { ...}
     onSubscribe: function(maxValueSize, updateValueCallback) {
-      console.log(`onSubscribe: ${maxValueSize}`);
+        console.log(`onSubscribe: ${maxValueSize}`);
     }, // optional notify/indicate subscribe handler, function(maxValueSize, updateValueCallback) { ...}
-    onUnsubscribe: function(){
-      console.log('onUnsubscribe');
+    onUnsubscribe: function() {
+        console.log('onUnsubscribe');
     }, // optional notify/indicate unsubscribe handler, function() { ...}
-    onNotify: function(){
-      console.log('onNotify');
+    onNotify: function() {
+        console.log('onNotify');
     }, // optional notify sent handler, function() { ...}
-    onIndicate: function(){
-      console.log('onIndicate');
-    } // optional indicate confirmation received handler, function() { ...}
+    onIndicate: function() {
+            console.log('onIndicate');
+        } // optional indicate confirmation received handler, function() { ...}
 });
 
 var midiService = new PrimaryService({
@@ -67,22 +67,22 @@ var midiService = new PrimaryService({
 });
 
 bleno.on('stateChange', function(state) {
-  console.log('on -> stateChange: ' + state);
+    console.log('on -> stateChange: ' + state);
 
-  if (state === 'poweredOn') {
-    bleno.startAdvertising(serviceName, [midiServiceUUID]);
-  } else {
-    bleno.stopAdvertising();
-  }
+    if (state === 'poweredOn') {
+        bleno.startAdvertising(serviceName, [midiServiceUUID]);
+    } else {
+        bleno.stopAdvertising();
+    }
 });
 
 bleno.on('advertisingStart', function(error) {
-  console.log('on -> advertisingStart: ' + (error ? 'error ' + error : 'success'));
+    console.log('on -> advertisingStart: ' + (error ? 'error ' + error : 'success'));
 
-  if (!error) {
-    console.log('Setting MIDI Service');
-    bleno.setServices([midiService]);
-  }
+    if (!error) {
+        console.log('Setting MIDI Service');
+        bleno.setServices([midiService]);
+    }
 });
 
 bleno.on('accept', function(clientAddress) {
