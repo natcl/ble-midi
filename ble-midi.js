@@ -12,6 +12,16 @@ const serviceName = `${hostname} MIDI`;
 const midiServiceUUID = '03b80e5aede84b33a7516ce34ec4c700';
 const midiCharacteristicUUID = '7772e5db38684112a1a9f2669d106bf3';
 
+var midiTypes = {
+    '8': 'noteoff',
+    '9': 'noteon',
+    '10': 'polyat',
+    '11': 'controlchange',
+    '12': 'programchange',
+    '13': 'channelat',
+    '14': 'pitchbend'
+};
+
 var midiCharacteristic = new Characteristic({
     uuid: midiCharacteristicUUID, // or 'fff1' for 16-bit
     properties: ['write', 'writeWithoutResponse', 'notify', 'read'], // can be a combination of 'read', 'write', 'writeWithoutResponse', 'notify', 'indicate'
@@ -26,6 +36,16 @@ var midiCharacteristic = new Characteristic({
     },
     onWriteRequest: function(data, offset, withoutResponse, callback) {
       console.log(`onWriteRequest data: ${data.toString('hex')}, ${offset}, ${withoutResponse}`);
+      var header = data[0];
+      var timestamp = data[1];
+      var status = data[2];
+      var byte1 = data[3];
+      var byte2 = data[4];
+
+      var channel = (status & 0xF) + 1;
+      var type = midiTypes[status >> 4];
+
+      console.log(`type: ${type} channel: ${channel} data1: ${byte1} data2: ${byte2}`);
     }, // optional write request handler, function(data, offset, withoutResponse, callback) { ...}
     onSubscribe: function(maxValueSize, updateValueCallback) {
       console.log(`onSubscribe: ${maxValueSize}`);
